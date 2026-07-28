@@ -1,6 +1,5 @@
 import express from "express";
 import { createServer } from "http";
-import { setupVite } from "./vite";
 import { registerRoutes } from "./routes";
 import { MemStorage } from "./storage";
 import { seedData } from "./seedData";
@@ -17,6 +16,7 @@ await seedData(storage);
 app.use(registerRoutes(storage));
 
 if (process.env.NODE_ENV !== "production") {
+  const { setupVite } = await import("./vite");
   await setupVite(app, server);
 } else {
   const sirv = (await import("sirv")).default;
