@@ -78,10 +78,21 @@ O projeto inclui um `Dockerfile` multi-stage na raiz, pronto para ser usado no [
 
 1. No Coolify, crie um novo recurso **Application** apontando para este repositório e a branch desejada.
 2. Build Pack: **Dockerfile** (detectado automaticamente).
-3. Porta exposta: **5000** (definida via `EXPOSE` no Dockerfile; pode ser sobrescrita com a variável `PORT`).
-4. Health check (opcional, recomendado no Coolify): caminho `/api/health`, porta `5000` — o Dockerfile já define um `HEALTHCHECK` equivalente.
+3. Em **Network > Ports Exposes**, use **5000** — é a porta padrão em que o servidor escuta dentro do container (definida via `EXPOSE`/`PORT` no Dockerfile).
+4. Health check (opcional, recomendado no Coolify): caminho `/api/health`, mesma porta do passo acima — o Dockerfile já define um `HEALTHCHECK` equivalente.
 5. Variáveis de ambiente: nenhuma é obrigatória para o app subir.
 6. Clique em **Deploy**.
+
+### Usando uma porta diferente de 5000
+
+O valor em **Ports Exposes** do Coolify só configura o proxy (Traefik/Caddy) — ele precisa apontar para a porta em que o servidor **realmente** está escutando dentro do container, senão o app fica em loop de restart ("Restarting", unhealthy). Para mudar a porta:
+
+1. Em **Environment Variables**, adicione `PORT=<porta desejada>` (ex.: `PORT=80`).
+2. Em **Network > Ports Exposes**, use o **mesmo valor**.
+3. Se usar o Healthcheck da aba própria do Coolify, ajuste a porta lá também.
+4. Clique em **Redeploy** (não só Restart, para os labels do proxy serem regerados com a porta nova).
+
+O container roda como usuário não-root, mas o `node` recebe a capability `cap_net_bind_service` no build, então portas privilegiadas (ex. `80`) funcionam normalmente via `PORT` sem precisar rodar como root.
 
 Detalhes do build:
 
