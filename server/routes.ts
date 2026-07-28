@@ -28,9 +28,27 @@ interface YoutubeSearchItem {
   };
 }
 
-const DEFAULT_YOUTUBE_CHANNEL_ID = "UCL24vuJfRN6_opDgrxwriNQ";
+// The channel is now identified by its @handle (from the public channel URL)
+// rather than an opaque channel ID, since that's what's actually on hand day
+// to day. YOUTUBE_CHANNEL_ID can still be set directly to skip resolution.
+const DEFAULT_YOUTUBE_HANDLE = "gimenesproducoesmusicais";
 const YOUTUBE_CACHE_TTL_MS = 60 * 60 * 1000;
 let youtubeCache: { videos: YoutubeVideo[]; fetchedAt: number } | null = null;
+
+async function resolveYoutubeChannelId(apiKey: string): Promise<string> {
+  if (process.env.YOUTUBE_CHANNEL_ID) {
+    return process.env.YOUTUBE_CHANNEL_ID;
+  }
+  const handle = process.env.YOUTUBE_CHANNEL_HANDLE || DEFAULT_YOUTUBE_HANDLE;
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(handle)}&key=${apiKey}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const channelId = data.items?.[0]?.id;
+  if (!channelId) {
+    throw new Error(`Could not resolve YouTube channel for handle "@${handle}"`);
+  }
+  return channelId;
+}
 
 export function registerRoutes(storage: IStorage) {
   const router = Router();
@@ -44,7 +62,6 @@ export function registerRoutes(storage: IStorage) {
   // the client can just render nothing until a real key is set.
   router.get("/api/youtube/videos", async (req, res) => {
     const apiKey = process.env.YOUTUBE_API_KEY;
-    const channelId = process.env.YOUTUBE_CHANNEL_ID || DEFAULT_YOUTUBE_CHANNEL_ID;
 
     if (!apiKey) {
       return res.json({ videos: [], configured: false });
@@ -55,6 +72,7 @@ export function registerRoutes(storage: IStorage) {
     }
 
     try {
+      const channelId = await resolveYoutubeChannelId(apiKey);
       const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&key=${apiKey}&order=date&type=video&maxResults=8`;
       const ytRes = await fetch(url);
       const data = await ytRes.json();

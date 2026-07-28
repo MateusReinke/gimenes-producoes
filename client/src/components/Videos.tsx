@@ -78,7 +78,7 @@ const Videos = () => {
 
         <div className="text-center mt-12 scroll-fade-in">
           <a
-            href="https://youtube.com/@gimenes-producoes"
+            href="https://youtube.com/@gimenesproducoesmusicais?si=YcNWjg7rwGQomVBz"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 font-inter font-medium text-primary hover:text-primary-glow transition-elegant"

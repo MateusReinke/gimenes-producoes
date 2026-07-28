@@ -9,21 +9,21 @@ const Repertoire = () => {
       category: "Casamentos",
       icon: Heart,
       description: "Trilha sonora romântica para cada momento especial",
-      pieces: ["Ave Maria - Schubert", "Canon in D - Pachelbel", "Wedding March - Mendelssohn"],
+      pieces: ["Marcha Nupcial", "Hallelujah", "Can't Help Falling in Love"],
       color: "text-pink-600"
     },
     {
       category: "Música Sacra", 
       icon: Star,
       description: "Repertório solene para cerimônias religiosas",
-      pieces: ["Aleluia - Händel", "Te Deum - Berlioz", "Magnificat - Bach"],
+      pieces: ["Ave Maria – Gounod", "Canon in D", "Jesus, Alegria dos Homens"],
       color: "text-purple-600"
     },
     {
       category: "Clássicos Populares",
       icon: Music,
       description: "Grandes sucessos da música erudita que todos conhecem",
-      pieces: ["Primavera - Vivaldi", "Für Elise - Beethoven", "Clair de Lune - Debussy"],
+      pieces: ["Turning Page", "Coldplay - Viva La Vida", "Ordinary"],
       color: "text-blue-600"
     }
   ];
@@ -87,11 +87,11 @@ const Repertoire = () => {
           <div className="bg-card shadow-card rounded-3xl p-12 max-w-3xl mx-auto">
             <Music className="h-12 w-12 text-primary mx-auto mb-4" />
             <h3 className="font-playfair font-bold text-2xl text-card-foreground mb-4">
-              Repertório Personalizado
+              Eventos e Apresentações
             </h3>
             <p className="font-inter text-muted-foreground leading-relaxed mb-6">
-              Além do nosso repertório padrão, criamos programas musicais personalizados para eventos especiais, 
-              casamentos, cerimônias corporativas e celebrações únicas.
+              Atuamos em diversos tipos de eventos e apresentações, do repertório padrão a programas
+              musicais personalizados para casamentos, cerimônias corporativas e celebrações únicas.
             </p>
             <p className="font-inter text-sm text-muted-foreground">
               Possui uma música especial em mente? Entre em contato para discutir suas necessidades musicais específicas.
