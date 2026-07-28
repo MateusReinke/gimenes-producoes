@@ -1,6 +1,5 @@
 import express from "express";
 import { createServer } from "http";
-import { setupVite } from "./vite";
 import { registerRoutes } from "./routes";
 import { MemStorage } from "./storage";
 import { seedData } from "./seedData";
@@ -17,13 +16,14 @@ await seedData(storage);
 app.use(registerRoutes(storage));
 
 if (process.env.NODE_ENV !== "production") {
+  const { setupVite } = await import("./vite");
   await setupVite(app, server);
 } else {
   const sirv = (await import("sirv")).default;
-  app.use(sirv("dist/public", { extensions: [] }));
+  app.use(sirv("dist/public", { single: true }));
 }
 
-const PORT = 5000;
+const PORT = Number(process.env.PORT) || 5000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
