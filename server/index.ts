@@ -20,10 +20,10 @@ if (process.env.NODE_ENV !== "production") {
   await setupVite(app, server);
 } else {
   const sirv = (await import("sirv")).default;
-  app.use(sirv("dist/public", { extensions: [] }));
+  app.use(sirv("dist/public", { single: true }));
 }
 
-const PORT = 5000;
+const PORT = Number(process.env.PORT) || 5000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

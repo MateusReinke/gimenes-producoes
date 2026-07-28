@@ -13,6 +13,10 @@ import {
 export function registerRoutes(storage: IStorage) {
   const router = Router();
 
+  router.get("/api/health", (req, res) => {
+    res.json({ status: "ok" });
+  });
+
   router.get("/api/events", async (req, res) => {
     const events = await storage.getEvents();
     res.json(events);

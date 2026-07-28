@@ -71,3 +71,20 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+
+## Deploy no Coolify
+
+O projeto inclui um `Dockerfile` multi-stage na raiz, pronto para ser usado no [Coolify](https://coolify.io/).
+
+1. No Coolify, crie um novo recurso **Application** apontando para este repositório e a branch desejada.
+2. Build Pack: **Dockerfile** (detectado automaticamente).
+3. Porta exposta: **5000** (definida via `EXPOSE` no Dockerfile; pode ser sobrescrita com a variável `PORT`).
+4. Health check (opcional, recomendado no Coolify): caminho `/api/health`, porta `5000` — o Dockerfile já define um `HEALTHCHECK` equivalente.
+5. Variáveis de ambiente: nenhuma é obrigatória para o app subir.
+6. Clique em **Deploy**.
+
+Detalhes do build:
+
+- `npm run build` gera o bundle do client (Vite) em `dist/public`.
+- `npm run start` sobe o servidor Express, que serve a API em `/api/*` e os arquivos estáticos (com fallback de SPA) na mesma porta.
+- Os dados (eventos, músicos, vídeos, etc.) usam armazenamento em memória (`MemStorage`) e são reiniciados a cada deploy/restart, pois ainda não há um banco de dados conectado. O schema Drizzle em `shared/schema.ts` já está pronto para uma futura migração para Postgres — nesse caso, adicione um serviço de banco de dados no Coolify, defina `DATABASE_URL` e implemente uma versão do `IStorage` baseada em Drizzle.
