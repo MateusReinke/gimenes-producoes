@@ -10,11 +10,74 @@ import {
   insertNewsletterSubscriberSchema,
 } from "@shared/schema";
 
+interface YoutubeVideo {
+  id: string;
+  title: string;
+  description: string;
+  publishedAt: string;
+  thumbnail: string;
+}
+
+interface YoutubeSearchItem {
+  id: { videoId: string };
+  snippet: {
+    title: string;
+    description: string;
+    publishedAt: string;
+    thumbnails: { high?: { url: string }; default?: { url: string } };
+  };
+}
+
+const DEFAULT_YOUTUBE_CHANNEL_ID = "UCL24vuJfRN6_opDgrxwriNQ";
+const YOUTUBE_CACHE_TTL_MS = 60 * 60 * 1000;
+let youtubeCache: { videos: YoutubeVideo[]; fetchedAt: number } | null = null;
+
 export function registerRoutes(storage: IStorage) {
   const router = Router();
 
   router.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
+  });
+
+  // Proxies the YouTube Data API server-side so the API key never ships to
+  // the browser. Returns an empty list (not an error) when unconfigured, so
+  // the client can just render nothing until a real key is set.
+  router.get("/api/youtube/videos", async (req, res) => {
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    const channelId = process.env.YOUTUBE_CHANNEL_ID || DEFAULT_YOUTUBE_CHANNEL_ID;
+
+    if (!apiKey) {
+      return res.json({ videos: [], configured: false });
+    }
+
+    if (youtubeCache && Date.now() - youtubeCache.fetchedAt < YOUTUBE_CACHE_TTL_MS) {
+      return res.json({ videos: youtubeCache.videos, configured: true });
+    }
+
+    try {
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(channelId)}&key=${apiKey}&order=date&type=video&maxResults=8`;
+      const ytRes = await fetch(url);
+      const data = await ytRes.json();
+
+      if (data.error) {
+        console.error("YouTube API error:", data.error.message);
+        return res.json({ videos: youtubeCache?.videos ?? [], configured: true });
+      }
+
+      const videos: YoutubeVideo[] = (data.items || []).map((item: YoutubeSearchItem) => ({
+        id: item.id.videoId,
+        title: item.snippet.title,
+        description: item.snippet.description,
+        publishedAt: item.snippet.publishedAt,
+        thumbnail: item.snippet.thumbnails.high?.url ?? item.snippet.thumbnails.default?.url ?? "",
+      }));
+
+      youtubeCache = { videos, fetchedAt: Date.now() };
+      res.json({ videos, configured: true });
+    } catch (error) {
+      console.error("Failed to fetch YouTube videos:", error);
+      res.json({ videos: youtubeCache?.videos ?? [], configured: true });
+    }
   });
 
   router.get("/api/events", async (req, res) => {

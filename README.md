@@ -80,7 +80,7 @@ O projeto inclui um `Dockerfile` multi-stage na raiz, pronto para ser usado no [
 2. Build Pack: **Dockerfile** (detectado automaticamente).
 3. Em **Network > Ports Exposes**, use **5000** — é a porta padrão em que o servidor escuta dentro do container (definida via `EXPOSE`/`PORT` no Dockerfile).
 4. Health check (opcional, recomendado no Coolify): caminho `/api/health`, mesma porta do passo acima — o Dockerfile já define um `HEALTHCHECK` equivalente.
-5. Variáveis de ambiente: nenhuma é obrigatória para o app subir.
+5. Variáveis de ambiente: nenhuma é obrigatória para o app subir. Opcionalmente, defina `YOUTUBE_API_KEY` (e `YOUTUBE_CHANNEL_ID`, se quiser usar um canal diferente do padrão) para habilitar a seção "Últimos Vídeos" — sem essa chave, a seção simplesmente não aparece no site.
 6. Clique em **Deploy**.
 
 ### Usando uma porta diferente de 5000
