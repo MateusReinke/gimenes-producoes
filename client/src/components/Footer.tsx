@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import NewsletterForm from "./NewsletterForm";
 
 const socialLinks = [
-  { name: "WhatsApp", icon: MessageSquare, href: "https://wa.me/5511999999999" },
-  { name: "YouTube", icon: Youtube, href: "https://youtube.com/@gimenes-producoes" },
-  { name: "Instagram", icon: Instagram, href: "https://instagram.com/gimenes.producoes" },
+  { name: "WhatsApp", icon: MessageSquare, href: "https://wa.me/5511917630902" },
+  { name: "YouTube", icon: Youtube, href: "https://youtube.com/@gimenesproducoesmusicais?si=YcNWjg7rwGQomVBz" },
+  { name: "Instagram", icon: Instagram, href: "https://instagram.com/gimenesproducoes" },
 ];
 
 const Footer = () => {
@@ -72,13 +72,13 @@ const Footer = () => {
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-primary-glow flex-shrink-0" />
                 <span className="font-inter text-sm text-card-foreground/80">
-                  contato@gimenes.com.br
+                  gimenesproducoesmusicais@gmail.com
                 </span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-primary-glow flex-shrink-0" />
                 <span className="font-inter text-sm text-card-foreground/80">
-                  (11) 99999-9999
+                  (11) 91763-0902
                 </span>
               </div>
               <div className="flex items-center space-x-3">

@@ -7,21 +7,21 @@ const Contact = () => {
     {
       name: "WhatsApp",
       icon: MessageSquare,
-      href: "https://wa.me/5511999999999",
+      href: "https://wa.me/5511917630902",
       color: "hover:text-green-400",
       description: "Fale conosco diretamente"
     },
     {
       name: "YouTube",
       icon: Youtube,
-      href: "https://youtube.com/@gimenes-producoes",
+      href: "https://youtube.com/@gimenesproducoesmusicais?si=YcNWjg7rwGQomVBz",
       color: "hover:text-red-400",
       description: "Veja nossas apresentações"
     },
     {
       name: "Instagram",
       icon: Instagram,
-      href: "https://instagram.com/gimenes.producoes",
+      href: "https://instagram.com/gimenesproducoes",
       color: "hover:text-pink-400",
       description: "Acompanhe nossos bastidores"
     },
@@ -38,13 +38,13 @@ const Contact = () => {
     {
       icon: Phone,
       title: "Telefone",
-      info: "(11) 99999-9999",
+      info: "(11) 91763-0902",
       description: "Ligações e WhatsApp"
     },
     {
       icon: Mail,
       title: "E-mail",
-      info: "contato@gimenes.com.br",
+      info: "gimenesproducoesmusicais@gmail.com",
       description: "Resposta em até 24h"
     },
     {

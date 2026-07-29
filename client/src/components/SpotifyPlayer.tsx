@@ -64,7 +64,7 @@ const SpotifyPlayer = ({
       {/* Additional Playlists */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <PlaylistCard
-          title="Clássicos Eternos"
+          title="Clássicos Atemporais"
           description="As mais belas peças da música clássica"
           playlistId="37i9dQZF1DWWEJlAGA9gs0"
         />
@@ -74,7 +74,7 @@ const SpotifyPlayer = ({
           playlistId="37i9dQZF1DX3Ogo9pFvBkk"
         />
         <PlaylistCard
-          title="Casamentos"
+          title="Música Popular"
           description="Trilha sonora perfeita para o seu grande dia"
           playlistId="37i9dQZF1DX0XUsuxWHRQd"
         />

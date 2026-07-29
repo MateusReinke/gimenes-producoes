@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar, Play, Award, Users, Star } from "lucide-react";
 
 const stats = [
-  { icon: Award, value: "200+", label: "Eventos Realizados" },
+  { icon: Award, value: "2000+", label: "Eventos Realizados" },
   { icon: Users, value: "20+", label: "Músicas no Repertório" },
   { icon: Star, value: "10+", label: "Anos de Experiência" },
 ];

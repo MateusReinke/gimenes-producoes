@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Music, Award, Users, Heart } from "lucide-react";
+import { Music, Award, Users } from "lucide-react";
 
 const About = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -24,23 +24,18 @@ const About = () => {
   const features = [
     {
       icon: Music,
-      title: "Repertório Refinado",
-      description: "Seleção cuidadosa de obras clássicas dos grandes mestres da música erudita"
+      title: "Repertório Personalizado",
+      description: "Criamos um repertório exclusivo para cada tipo de evento, atendendo aos pedidos musicais dos clientes e proporcionando uma experiência única para cada celebração."
     },
     {
       icon: Users,
-      title: "Músicos Experientes",
-      description: "Profissionais formados nos melhores conservatórios com décadas de experiência"
+      title: "Músicos de Excelência",
+      description: "Nossa orquestra é composta pelos melhores músicos de São Paulo, com ampla experiência em eventos sociais, corporativos e orquestras sinfônicas."
     },
     {
       icon: Award,
-      title: "Excelência Reconhecida",
-      description: "Premiados em concursos nacionais e internacionais de música clássica"
-    },
-    {
-      icon: Heart,
-      title: "Paixão pela Arte",
-      description: "Dedicação integral à preservação e difusão da música clássica de qualidade"
+      title: "Compromisso com a Qualidade",
+      description: "Dedicação integral a cada apresentação musical, buscando sempre o mais alto nível de qualidade, sensibilidade artística e excelência em cada detalhe."
     }
   ];
 
@@ -59,19 +54,19 @@ const About = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20 items-stretch">
           {features.map((feature, index) => (
-            <div 
+            <div
               key={feature.title}
-              className={`text-center group transition-all duration-800 ${
-                isVisible 
-                  ? 'animate-fade-in-up' 
+              className={`h-full flex flex-col items-center justify-center text-center group transition-all duration-800 ${
+                isVisible
+                  ? 'animate-fade-in-up'
                   : 'opacity-0 translate-y-8'
               }`}
               style={{ animationDelay: `${isVisible ? index * 0.2 + 0.3 : 0}s` }}
             >
-              <div className="bg-card shadow-card rounded-full p-6 w-20 h-20 mx-auto mb-4 group-hover:shadow-elegant transition-elegant">
-                <feature.icon className="h-8 w-8 text-primary mx-auto" />
+              <div className="bg-card shadow-card rounded-full p-6 w-20 h-20 mb-4 flex items-center justify-center group-hover:shadow-elegant transition-elegant shrink-0">
+                <feature.icon className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-playfair font-semibold text-xl text-foreground mb-3">
                 {feature.title}
@@ -92,12 +87,12 @@ const About = () => {
                 Nossa Missão
               </h3>
               <p className="font-inter text-muted-foreground leading-relaxed mb-6">
-                Promover a música clássica através de apresentações de alto nível artístico, 
-                proporcionando ao público experiências musicais transformadoras e educativas.
+                Transmitir a emoção de momentos únicos através da música, proporcionando ao
+                público experiências inesquecíveis que permanecem na memória de cada pessoa presente.
               </p>
               <p className="font-inter text-muted-foreground leading-relaxed">
-                Acreditamos que a música clássica tem o poder de enriquecer vidas e criar 
-                conexões profundas entre pessoas de todas as idades e origens.
+                Acreditamos que cada apresentação deve emocionar, conectar pessoas e transformar
+                momentos especiais em lembranças eternas através da música ao vivo.
               </p>
             </div>
             <div className="space-y-6">
@@ -107,10 +102,10 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-playfair font-semibold text-lg text-foreground">
-                    200+ Apresentações
+                    2000+ Apresentações
                   </h4>
                   <p className="font-inter text-sm text-muted-foreground">
-                    Concertos realizados em teatros e salas de concerto
+                    Realizadas em casamentos, noivados, formaturas, festas de aniversário e diversos eventos especiais
                   </p>
                 </div>
               </div>
@@ -120,10 +115,10 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-playfair font-semibold text-lg text-foreground">
-                    15 Músicos Profissionais
+                    Especialistas em Eventos
                   </h4>
                   <p className="font-inter text-sm text-muted-foreground">
-                    Especialistas em instrumentos de cordas e sopros
+                    Atuação em eventos sociais e corporativos, oferecendo apresentações personalizadas para diferentes ocasiões
                   </p>
                 </div>
               </div>
@@ -133,10 +128,10 @@ const About = () => {
                 </div>
                 <div>
                   <h4 className="font-playfair font-semibold text-lg text-foreground">
-                    10 Anos de Experiência
+                    Experiência ao Vivo
                   </h4>
                   <p className="font-inter text-sm text-muted-foreground">
-                    Tradição em apresentações de música clássica
+                    Anos de experiência em apresentações musicais ao vivo, garantindo profissionalismo, pontualidade e excelência artística
                   </p>
                 </div>
               </div>

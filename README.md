@@ -80,7 +80,7 @@ O projeto inclui um `Dockerfile` multi-stage na raiz, pronto para ser usado no [
 2. Build Pack: **Dockerfile** (detectado automaticamente).
 3. Em **Network > Ports Exposes**, use **5000** — é a porta padrão em que o servidor escuta dentro do container (definida via `EXPOSE`/`PORT` no Dockerfile).
 4. Health check (opcional, recomendado no Coolify): caminho `/api/health`, mesma porta do passo acima — o Dockerfile já define um `HEALTHCHECK` equivalente.
-5. Variáveis de ambiente: nenhuma é obrigatória para o app subir. Opcionalmente, defina `YOUTUBE_API_KEY` (e `YOUTUBE_CHANNEL_ID`, se quiser usar um canal diferente do padrão) para habilitar a seção "Últimos Vídeos" — sem essa chave, a seção simplesmente não aparece no site.
+5. Variáveis de ambiente: nenhuma é obrigatória para o app subir. Opcionalmente, defina `YOUTUBE_API_KEY` para habilitar a seção "Últimos Vídeos" (busca automaticamente o canal `@gimenesproducoesmusicais`; para usar outro canal, defina `YOUTUBE_CHANNEL_HANDLE` com o handle ou `YOUTUBE_CHANNEL_ID` com o ID direto) — sem a chave, a seção simplesmente não aparece no site.
 6. Clique em **Deploy**.
 
 ### Usando uma porta diferente de 5000
@@ -99,3 +99,4 @@ Detalhes do build:
 - `npm run build` gera o bundle do client (Vite) em `dist/public`.
 - `npm run start` sobe o servidor Express, que serve a API em `/api/*` e os arquivos estáticos (com fallback de SPA) na mesma porta.
 - Os dados (eventos, músicos, vídeos, etc.) usam armazenamento em memória (`MemStorage`) e são reiniciados a cada deploy/restart, pois ainda não há um banco de dados conectado. O schema Drizzle em `shared/schema.ts` já está pronto para uma futura migração para Postgres — nesse caso, adicione um serviço de banco de dados no Coolify, defina `DATABASE_URL` e implemente uma versão do `IStorage` baseada em Drizzle.
+- A seção "Nossos Artistas" busca seguidores e foto de perfil do Instagram automaticamente (`/api/instagram/profile`), sem precisar de chave de API. Isso não usa uma API oficial — o servidor lê a página pública do perfil e extrai esses dois dados das meta tags. Funciona sem configuração, mas é frágil por natureza: se o Instagram mudar a página ou bloquear o IP do servidor, a rota volta a `available: false` e o site cai de volta pros valores estáticos definidos em `InstagramStyleMusicians.tsx`, sem quebrar nada. Cache de 6h por perfil para reduzir o risco de bloqueio.
