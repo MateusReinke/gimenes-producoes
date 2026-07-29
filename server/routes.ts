@@ -35,6 +35,77 @@ const DEFAULT_YOUTUBE_HANDLE = "gimenesproducoesmusicais";
 const YOUTUBE_CACHE_TTL_MS = 60 * 60 * 1000;
 let youtubeCache: { videos: YoutubeVideo[]; fetchedAt: number } | null = null;
 
+// There's no official, key-based API for reading someone else's public
+// Instagram follower count / avatar without them connecting their account
+// via OAuth (Graph API). This reads the public profile page instead and
+// pulls what's in its own <meta> tags - unofficial, can break if Instagram
+// changes the page, so every call is defensive and caches aggressively to
+// avoid hammering them.
+interface InstagramProfileData {
+  followers: string | null;
+  imageUrl: string | null;
+}
+
+const INSTAGRAM_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const instagramCache = new Map<string, { data: InstagramProfileData; fetchedAt: number }>();
+const INSTAGRAM_USER_AGENT =
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
+function normalizeInstagramUsername(raw: unknown): string {
+  return String(raw ?? "").trim().replace(/^@/, "");
+}
+
+function extractMetaContent(html: string, property: string): string | null {
+  // Matches the whole <meta> tag first instead of assuming attribute order
+  // (property="x" content="y" vs. content="y" property="x") since that's
+  // not guaranteed and this can't be verified against Instagram's real,
+  // frequently-changing markup from here.
+  const tagMatch = html.match(new RegExp(`<meta[^>]+property=["']${property}["'][^>]*>`, "i"));
+  if (!tagMatch) return null;
+  const contentMatch = tagMatch[0].match(/content=["']([^"']+)["']/i);
+  return contentMatch ? contentMatch[1].replace(/&amp;/g, "&").replace(/&quot;/g, '"') : null;
+}
+
+function extractFollowerCount(description: string | null): string | null {
+  if (!description) return null;
+  // Comma is a thousands separator in "1,234 Followers" but a decimal one in
+  // "8,2 mil seguidores" - rather than guess, just pass through whatever
+  // Instagram itself already formatted instead of reformatting the number.
+  const match = description.match(/([\d][\d.,]*\s?(?:mil|K|M)?)\s*(?:Followers|seguidores)/i);
+  return match ? match[1].trim() : null;
+}
+
+async function fetchInstagramProfile(username: string): Promise<InstagramProfileData> {
+  const cached = instagramCache.get(username);
+  if (cached && Date.now() - cached.fetchedAt < INSTAGRAM_CACHE_TTL_MS) {
+    return cached.data;
+  }
+
+  try {
+    const res = await fetch(`https://www.instagram.com/${encodeURIComponent(username)}/`, {
+      headers: { "User-Agent": INSTAGRAM_USER_AGENT, "Accept-Language": "pt-BR,pt;q=0.9,en;q=0.8" },
+    });
+    if (!res.ok) throw new Error(`Instagram respondeu ${res.status}`);
+    const html = await res.text();
+
+    const data: InstagramProfileData = {
+      followers: extractFollowerCount(extractMetaContent(html, "og:description")),
+      imageUrl: extractMetaContent(html, "og:image"),
+    };
+
+    if (!data.followers && !data.imageUrl) {
+      throw new Error("Não foi possível extrair dados do perfil (página pode ter mudado ou pedido login)");
+    }
+
+    instagramCache.set(username, { data, fetchedAt: Date.now() });
+    return data;
+  } catch (error) {
+    console.error(`Failed to scrape Instagram profile @${username}:`, error);
+    // Serve a stale cache entry rather than nothing, if we have one.
+    return cached?.data ?? { followers: null, imageUrl: null };
+  }
+}
+
 async function resolveYoutubeChannelId(apiKey: string): Promise<string> {
   if (process.env.YOUTUBE_CHANNEL_ID) {
     return process.env.YOUTUBE_CHANNEL_ID;
@@ -95,6 +166,45 @@ export function registerRoutes(storage: IStorage) {
     } catch (error) {
       console.error("Failed to fetch YouTube videos:", error);
       res.json({ videos: youtubeCache?.videos ?? [], configured: true });
+    }
+  });
+
+  // Best-effort follower count + avatar for a public Instagram profile.
+  // "available: false" means scraping failed - the client should fall back
+  // to its own static copy rather than show nothing.
+  router.get("/api/instagram/profile", async (req, res) => {
+    const username = normalizeInstagramUsername(req.query.username);
+    if (!username) {
+      return res.status(400).json({ error: "username é obrigatório" });
+    }
+
+    const data = await fetchInstagramProfile(username);
+    res.json({
+      followers: data.followers,
+      profileImage: data.imageUrl ? `/api/instagram/avatar/${encodeURIComponent(username)}` : null,
+      available: Boolean(data.followers || data.imageUrl),
+    });
+  });
+
+  // Streams the profile photo through our own origin - Instagram's CDN
+  // blocks hotlinked <img> requests from other sites, so the browser can't
+  // load its image URL directly.
+  router.get("/api/instagram/avatar/:username", async (req, res) => {
+    const username = normalizeInstagramUsername(req.params.username);
+    const data = await fetchInstagramProfile(username);
+    if (!data.imageUrl) {
+      return res.status(404).end();
+    }
+
+    try {
+      const imgRes = await fetch(data.imageUrl);
+      if (!imgRes.ok) throw new Error(`Instagram CDN respondeu ${imgRes.status}`);
+      res.setHeader("Content-Type", imgRes.headers.get("content-type") || "image/jpeg");
+      res.setHeader("Cache-Control", "public, max-age=21600");
+      res.send(Buffer.from(await imgRes.arrayBuffer()));
+    } catch (error) {
+      console.error(`Failed to proxy Instagram avatar for @${username}:`, error);
+      res.status(502).end();
     }
   });
 
